@@ -1,0 +1,17 @@
+#   *****************   BINGEFEAST  *********************
+
+#   mongodb server connection   *****
+USERNAME = "mongodb_username"
+PASSWORD = "mongodb_password"
+CLUSTER_URL = "127.0.0.1"
+AUTH_MECHANISM = "SCRAM-SHA-256"
+
+#   external api keys   *****
+
+TMDB_URL = 'https://api.themoviedb.org/bla-bla-bla'
+TMDB_API_KEY = "a1b2c3d4efghi5j6k7l8"
+
+RAPIDAPI_UTELLY_URL = "https://utelly-tv-shows-and-movies-bla-bla-bla.rapidapi.com/lookup"
+RAPIDAPI_UTELLY_API_KEY = "a1b2c3d4efghi5j6k7l8"
+
+#   *****************************************************
