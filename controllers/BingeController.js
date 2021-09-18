@@ -18,7 +18,8 @@ const apiCall = require("../apiExternal/apiCall")
 
 const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@cluster0.cg6zh.mongodb.net/bingefeast?retryWrites=true&w=majority`;
 console.log({ uri })
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
 // client.connect(err => {
 //   const collection = client.db("test").collection("devices");
 
@@ -173,37 +174,46 @@ exports.getCastDetails = async function (req, res) {
     }
 }
 
+
 exports.getDetails = async function (req, res) {
-    console.log("getDetails Params:", req.body)
+    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    try {
+        console.log("getDetails Params:", req.body)
+        await client.connect()
+        let db = client.db("bingefeast")
 
-    await client.connect()
-    let db = client.db("bingefeast")
+        let collectionSelect =
+            req.body.media_type === "movie"
+                ? "details_movie"
+                : req.body.media_type === "tv"
+                    ? "details_tv"
+                    : null
 
-    let collectionSelect =
-        req.body.media_type === "movie"
-            ? "details_movie"
-            : req.body.media_type === "tv"
-                ? "details_tv"
-                : null
+        let dbSearch = await db.collection(collectionSelect).findOne({ id: req.body.id })
 
-    let dbSearch = await db.collection(collectionSelect).findOne({ id: req.body.id })
+        if (dbSearch === null) {
+            let combinedResult = null
+            let details = await apiCall.axios(apiURL.detailsURL(req.body))
+            let externalID = await apiCall.axios(apiURL.externalIDURL(req.body))
+            combinedResult = {
+                media_type: req.body.media_type,
+                ...details, ...externalID
+            }
+            let dbResDetail = await db.collection(collectionSelect).insertOne(combinedResult)
+            console.log(`Doc created in details_movie/tv id: ${dbResDetail.insertedId}`)
+            await apiResponse.successResponse(res, "Doc Creation Successful.", combinedResult)
+        } else {
 
-    if (dbSearch === null) {
-        let combinedResult = null
-        let details = await apiCall.axios(apiURL.detailsURL(req.body))
-        let externalID = await apiCall.axios(apiURL.externalIDURL(req.body))
-        combinedResult = {
-            media_type: req.body.media_type,
-            ...details, ...externalID
+            await apiResponse.successResponse(res, "Doc Selection Successful.", dbSearch)
         }
-        let dbResDetail = await db.collection(collectionSelect).insertOne(combinedResult)
-        console.log(`Doc created in details_movie/tv id: ${dbResDetail.insertedId}`)
-        await client.close()
-        await apiResponse.successResponse(res, "Doc Creation Successful.", combinedResult)
-    } else {
-        await client.close()
-        await apiResponse.successResponse(res, "Doc Selection Successful.", dbSearch)
     }
+    catch (e) {
+        console.log("Error: " + e);
+    }
+    finally {
+        await client.close()
+    }
+    // run().catch(console.dir);
 }
 
 
