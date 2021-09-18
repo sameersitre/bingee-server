@@ -198,9 +198,10 @@ exports.getDetails = async function (req, res) {
         }
         let dbResDetail = await db.collection(collectionSelect).insertOne(combinedResult)
         console.log(`Doc created in details_movie/tv id: ${dbResDetail.insertedId}`)
-
+        await client.close()
         await apiResponse.successResponse(res, "Doc Creation Successful.", combinedResult)
     } else {
+        await client.close()
         await apiResponse.successResponse(res, "Doc Selection Successful.", dbSearch)
     }
 }
