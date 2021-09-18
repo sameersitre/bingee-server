@@ -25,7 +25,8 @@ app.use((err, req, res) => {
         return apiResponse.unauthorizedResponse(res, err.message)
     }
 })
-let PORT = 3500
+
+const PORT = process.env.PORT || 3500;
 app.listen(PORT, "127.0.0.1", function () {
     console.log(
         `nodejs listening at ${PORT}
