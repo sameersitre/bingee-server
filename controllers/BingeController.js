@@ -6,7 +6,10 @@ const apiCall = require("../apiExternal/apiCall")
 
 // const uri = `mongodb+srv://sameersitre:sameer123@cluster0.cg6zh.mongodb.net/test?authSource=admin&replicaSet=atlas-tyxn1a-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true`
 
-const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@cluster0.cg6zh.mongodb.net/bingefeast?retryWrites=true&w=majority`;
+const uri = `mongodb://${process.env.CLUSTER_URL}/`
+
+// const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@cluster0.cg6zh.mongodb.net/bingefeast?retryWrites=true&w=majority`;
+// console.log({ uri })
 console.log({ uri })
 
 exports.test = async function (req, res) {
